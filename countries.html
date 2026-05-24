@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог стран мира</title>
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --card-bg: #ffffff;
+            --text: #1a1a2e;
+            --text-secondary: #5a5a7a;
+            --accent: #3b6df0;
+            --accent-hover: #2854d4;
+            --danger: #e74c5e;
+            --danger-hover: #c0394b;
+            --border: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.12);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+            --font: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            --max-width: 1300px;
+            --header-height: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            height: var(--header-height);
+        }
+        .header-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .header-logo .icon {
+            font-size: 1.6rem;
+        }
+        .btn-favorites {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 16px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            background: var(--card-bg);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            white-space: nowrap;
+            user-select: none;
+        }
+        .btn-favorites:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: #fff5f6;
+        }
+        .btn-favorites.active {
+            background: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+        .btn-favorites .heart-icon {
+            font-size: 1.15rem;
+            transition: transform var(--transition);
+        }
+        .btn-favorites.active .heart-icon {
+            transform: scale(1.15);
+        }
+        .fav-count {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 2px 9px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+        .btn-favorites.active .fav-count {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ========== CONTROLS ========== */
+        .controls {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 20px 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .search-wrapper {
+            flex: 1 1 280px;
+            position: relative;
+            min-width: 200px;
+        }
+        .search-wrapper .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+            font-size: 1.1rem;
+        }
+        .search-input {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.95rem;
+            background: var(--card-bg);
+            color: var(--text);
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 109, 240, 0.1);
+        }
+        .search-input::placeholder {
+            color: #a0aec0;
+        }
+        .search-clear {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            padding: 4px 8px;
+            border-radius: 50%;
+            transition: all var(--transition);
+            display: none;
+            line-height: 1;
+        }
+        .search-clear.visible {
+            display: block;
+        }
+        .search-clear:hover {
+            color: var(--text);
+            background: #f1f5f9;
+        }
+        .select-wrapper {
+            position: relative;
+            flex: 0 0 auto;
+        }
+        .select-wrapper select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 11px 36px 11px 14px;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            font-family: var(--font);
+            font-weight: 500;
+            transition: all var(--transition);
+            min-width: 160px;
+        }
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 109, 240, 0.1);
+        }
+        .select-wrapper .select-arrow {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #94a3b8;
+            font-size: 0.7rem;
+        }
+        .results-info {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 10px 20px 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ========== GRID ========== */
+        .main-content {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 16px 20px 40px;
+        }
+        .countries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 18px;
+        }
+        .country-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all var(--transition);
+            position: relative;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+        }
+        .country-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: #e8ecf4;
+        }
+        .country-card:active {
+            transform: scale(0.985);
+            transition: transform 0.1s ease;
+        }
+        .card-flag-wrap {
+            width: 100%;
+            height: 170px;
+            overflow: hidden;
+            background: #f1f5f9;
+            position: relative;
+        }
+        .card-flag-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .country-card:hover .card-flag-wrap img {
+            transform: scale(1.06);
+        }
+        .card-body {
+            padding: 15px 16px 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .card-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-region {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card-detail {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .card-detail .label {
+            font-weight: 600;
+            color: #777;
+            font-size: 0.78rem;
+        }
+        .card-favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.85);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            z-index: 5;
+            backdrop-filter: blur(4px);
+            color: #bbb;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+        .card-favorite-btn:hover {
+            background: #fff;
+            transform: scale(1.1);
+            color: var(--danger);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+        .card-favorite-btn.is-favorite {
+            color: var(--danger);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .card-favorite-btn.is-favorite:hover {
+            color: var(--danger-hover);
+            background: #fff;
+        }
+
+        /* ========== STATES ========== */
+        .state-message {
+            text-align: center;
+            padding: 60px 20px;
+            grid-column: 1 / -1;
+        }
+        .state-message .state-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+        .state-message h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        .state-message p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+        .btn-retry {
+            padding: 10px 24px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .btn-retry:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Skeleton */
+        .skeleton-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .skeleton-img {
+            width: 100%;
+            height: 170px;
+            background: linear-gradient(90deg, #eef1f5 25%, #f5f7fa 50%, #eef1f5 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .skeleton-body {
+            padding: 15px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .skeleton-line {
+            height: 14px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #eef1f5 25%, #f5f7fa 50%, #eef1f5 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .skeleton-line.short {
+            width: 55%;
+        }
+        .skeleton-line.medium {
+            width: 75%;
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 15, 30, 0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(3px);
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            max-width: 650px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal-close {
+            position: sticky;
+            top: 12px;
+            float: right;
+            margin-right: 12px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            backdrop-filter: blur(6px);
+            color: #555;
+        }
+        .modal-close:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        .modal-flag {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            display: block;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        .modal-body {
+            padding: 20px 24px 28px;
+        }
+        .modal-body h2 {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+        .modal-body .official-name {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #888;
+            font-weight: 700;
+        }
+        .detail-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .detail-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        .chip {
+            background: #f1f5f9;
+            padding: 5px 11px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .modal-loader {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .header-logo {
+                font-size: 1.1rem;
+            }
+            .btn-favorites {
+                padding: 7px 12px;
+                font-size: 0.8rem;
+                gap: 4px;
+            }
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+                padding: 14px 14px 0;
+            }
+            .search-wrapper {
+                flex: 1 1 auto;
+                width: 100%;
+                min-width: unset;
+            }
+            .select-wrapper {
+                width: 100%;
+            }
+            .select-wrapper select {
+                width: 100%;
+                min-width: unset;
+            }
+            .countries-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 12px;
+            }
+            .main-content {
+                padding: 12px 14px 30px;
+            }
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .modal {
+                max-width: 95vw;
+                max-height: 90vh;
+            }
+            .modal-flag {
+                max-height: 200px;
+            }
+            .card-flag-wrap {
+                height: 150px;
+            }
+        }
+        @media (max-width: 480px) {
+            .countries-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .header-inner {
+                padding: 0 12px;
+            }
+            .header-logo {
+                font-size: 1rem;
+                gap: 6px;
+            }
+            .btn-favorites span:not(.heart-icon):not(.fav-count) {
+                display: none;
+            }
+            .btn-favorites {
+                padding: 8px 10px;
+                gap: 3px;
+            }
+            .card-flag-wrap {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="header-logo" title="На главную">
+                <span class="icon">🌍</span> Каталог стран
+            </a>
+            <button class="btn-favorites" id="btnFavorites" title="Показать избранное">
+                <span class="heart-icon">❤️</span>
+                <span>Избранное</span>
+                <span class="fav-count" id="favCount">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input
+            type="text"
+            class="search-input"
+            id="searchInput"
+            placeholder="Поиск страны по названию..."
+            autocomplete="off"
+            >
+            <button class="search-clear" id="searchClear" title="Очистить">✕</button>
+        </div>
+        <div class="select-wrapper">
+            <select id="regionFilter">
+                <option value="">Все регионы</option>
+                <option value="Africa">Африка</option>
+                <option value="Americas">Америка</option>
+                <option value="Asia">Азия</option>
+                <option value="Europe">Европа</option>
+                <option value="Oceania">Океания</option>
+                <option value="Antarctic">Антарктика</option>
+            </select>
+            <span class="select-arrow">▼</span>
+        </div>
+        <div class="select-wrapper">
+            <select id="sortSelect">
+                <option value="name-asc">Название (А → Я)</option>
+                <option value="name-desc">Название (Я → А)</option>
+                <option value="pop-desc">Население (↓)</option>
+                <option value="pop-asc">Население (↑)</option>
+            </select>
+            <span class="select-arrow">▼</span>
+        </div>
+    </div>
+    <div class="results-info" id="resultsInfo"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="countries-grid" id="countriesGrid">
+            <!-- Динамически заполняется -->
+        </div>
+    </main>
+
+    <!-- MODAL OVERLAY (скрыт по умолчанию) -->
+    <div class="modal-overlay" id="modalOverlay" style="display: none;">
+        <div class="modal" id="modalContent">
+            <!-- Динамически заполняется -->
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ==================== DOM-элементы ====================
+            const countriesGrid = document.getElementById('countriesGrid');
+            const searchInput = document.getElementById('searchInput');
+            const searchClear = document.getElementById('searchClear');
+            const regionFilter = document.getElementById('regionFilter');
+            const sortSelect = document.getElementById('sortSelect');
+            const btnFavorites = document.getElementById('btnFavorites');
+            const favCountEl = document.getElementById('favCount');
+            const resultsInfo = document.getElementById('resultsInfo');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalContent = document.getElementById('modalContent');
+
+            // ==================== Состояние ====================
+            let allCountries = []; // Все загруженные страны
+            let favorites = new Set(); // Set из cca3-кодов избранных стран
+            let showFavoritesOnly = false; // Флаг показа только избранного
+            let isLoading = false;
+            let isError = false;
+            let errorMessage = '';
+            let searchDebounceTimer = null;
+
+            // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+            function init() {
+                loadFavoritesFromStorage();
+                updateFavoritesUI();
+                fetchAllCountries();
+                bindEvents();
+            }
+
+            function bindEvents() {
+                searchInput.addEventListener('input', onSearchInput);
+                searchClear.addEventListener('click', clearSearch);
+                regionFilter.addEventListener('change', onFilterChange);
+                sortSelect.addEventListener('change', onFilterChange);
+                btnFavorites.addEventListener('click', toggleFavoritesView);
+                modalOverlay.addEventListener('click', onModalOverlayClick);
+                document.addEventListener('keydown', onKeyDown);
+            }
+
+            // ==================== localStorage (Избранное) ====================
+            function loadFavoritesFromStorage() {
+                try {
+                    const stored = localStorage.getItem('favoriteCountries');
+                    if (stored) {
+                        const arr = JSON.parse(stored);
+                        if (Array.isArray(arr)) {
+                            favorites = new Set(arr);
+                        }
+                    }
+                } catch (e) {
+                    favorites = new Set();
+                }
+            }
+
+            function saveFavoritesToStorage() {
+                try {
+                    localStorage.setItem('favoriteCountries', JSON.stringify([...favorites]));
+                } catch (e) {
+                    // localStorage может быть недоступен
+                }
+            }
+
+            function toggleFavorite(cca3) {
+                if (favorites.has(cca3)) {
+                    favorites.delete(cca3);
+                } else {
+                    favorites.add(cca3);
+                }
+                saveFavoritesToStorage();
+                updateFavoritesUI();
+                renderCountries();
+            }
+
+            function isFavorite(cca3) {
+                return favorites.has(cca3);
+            }
+
+            function updateFavoritesUI() {
+                const count = favorites.size;
+                favCountEl.textContent = count;
+                if (showFavoritesOnly) {
+                    btnFavorites.classList.add('active');
+                } else {
+                    btnFavorites.classList.remove('active');
+                }
+            }
+
+            function toggleFavoritesView() {
+                showFavoritesOnly = !showFavoritesOnly;
+                updateFavoritesUI();
+                renderCountries();
+            }
+
+            // ==================== API-запросы ====================
+            async function fetchAllCountries() {
+                isLoading = true;
+                isError = false;
+                errorMessage = '';
+                renderSkeletons();
+                resultsInfo.textContent = '';
+
+                try {
+                    const url =
+                        'https://restcountries.com/v3.1/all?fields=name,flags,region,population,capital,currencies,cca3';
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}`);
+                    }
+                    const data = await response.json();
+                    if (!Array.isArray(data) || data.length === 0) {
+                        throw new Error('Получен пустой список стран');
+                    }
+                    allCountries = data;
+                    isLoading = false;
+                    renderCountries();
+                } catch (err) {
+                    isLoading = false;
+                    isError = true;
+                    errorMessage = err.message || 'Не удалось загрузить данные';
+                    renderError();
+                }
+            }
+
+            async function fetchCountryDetail(cca3) {
+                try {
+                    const url =
+                        `https://restcountries.com/v3.1/alpha/${cca3}?fields=name,flags,region,subregion,population,capital,currencies,languages,borders,area,timezones,maps,cca3,coatOfArms`;
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`Ошибка загрузки: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    // API возвращает массив для alpha-эндпоинта
+                    const country = Array.isArray(data) ? data[0] : data;
+                    if (!country) throw new Error('Данные о стране не найдены');
+                    return country;
+                } catch (err) {
+                    throw err;
+                }
+            }
+
+            // ==================== РЕНДЕРИНГ ====================
+            function getFilteredAndSortedCountries() {
+                let filtered = [...allCountries];
+
+                // Фильтр по региону
+                const region = regionFilter.value;
+                if (region) {
+                    filtered = filtered.filter(c => c.region === region);
+                }
+
+                // Поиск по названию
+                const query = searchInput.value.trim().toLowerCase();
+                if (query) {
+                    filtered = filtered.filter(c => {
+                        const common = (c.name?.common || '').toLowerCase();
+                        const official = (c.name?.official || '').toLowerCase();
+                        return common.includes(query) || official.includes(query);
+                    });
+                }
+
+                // Фильтр избранного
+                if (showFavoritesOnly) {
+                    filtered = filtered.filter(c => favorites.has(c.cca3));
+                }
+
+                // Сортировка
+                const sort = sortSelect.value;
+                filtered.sort((a, b) => {
+                    switch (sort) {
+                        case 'name-asc':
+                            return (a.name?.common || '').localeCompare(b.name?.common || '', 'ru');
+                        case 'name-desc':
+                            return (b.name?.common || '').localeCompare(a.name?.common || '', 'ru');
+                        case 'pop-desc':
+                            return (b.population || 0) - (a.population || 0);
+                        case 'pop-asc':
+                            return (a.population || 0) - (b.population || 0);
+                        default:
+                            return 0;
+                    }
+                });
+
+                return filtered;
+            }
+
+            function renderCountries() {
+                if (isLoading) {
+                    renderSkeletons();
+                    return;
+                }
+                if (isError) {
+                    renderError();
+                    return;
+                }
+
+                const filtered = getFilteredAndSortedCountries();
+                const total = allCountries.length;
+                const showing = filtered.length;
+
+                // Обновляем информацию о результатах
+                if (showFavoritesOnly) {
+                    resultsInfo.textContent = `⭐ Избранное: показано ${showing} из ${favorites.size} стран`;
+                } else if (searchInput.value.trim() || regionFilter.value) {
+                    resultsInfo.textContent = `Найдено: ${showing} из ${total} стран`;
+                } else {
+                    resultsInfo.textContent = `Всего стран: ${total}`;
+                }
+
+                // Пустой результат
+                if (showing === 0) {
+                    renderEmptyState();
+                    return;
+                }
+
+                // Рендерим карточки
+                countriesGrid.innerHTML = '';
+                filtered.forEach(country => {
+                    const card = createCountryCard(country);
+                    countriesGrid.appendChild(card);
+                });
+            }
+
+            function createCountryCard(country) {
+                const cca3 = country.cca3 || '';
+                const commonName = country.name?.common || 'Неизвестная страна';
+                const region = country.region || '—';
+                const population = country.population ? formatNumber(country.population) : '—';
+                const capital = country.capital && country.capital.length > 0 ? country.capital.join(', ') :
+                    '—';
+                const flagUrl = country.flags?.svg || country.flags?.png || '';
+                const flagAlt = country.flags?.alt || `Флаг ${commonName}`;
+                const favClass = isFavorite(cca3) ? 'is-favorite' : '';
+                const heartSymbol = isFavorite(cca3) ? '❤️' : '🤍';
+
+                const card = document.createElement('div');
+                card.className = 'country-card';
+                card.setAttribute('data-cca3', cca3);
+                card.innerHTML = `
+                    <div class="card-flag-wrap">
+                        <img src="${flagUrl}" alt="${escapeHtml(flagAlt)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                        <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:#eef1f5;color:#999;font-size:3rem;">🏳️</div>
+                    </div>
+                    <button class="card-favorite-btn ${favClass}" data-cca3="${cca3}" title="В избранное" aria-label="Добавить в избранное">
+                        ${heartSymbol}
+                    </button>
+                    <div class="card-body">
+                        <div class="card-name">${escapeHtml(commonName)}</div>
+                        <div class="card-region">${escapeHtml(region)}</div>
+                        <div class="card-detail">
+                            <span class="label">👥 Население:</span> ${escapeHtml(String(population))}
+                        </div>
+                        <div class="card-detail">
+                            <span class="label">🏙️ Столица:</span> ${escapeHtml(capital)}
+                        </div>
+                    </div>
+                `;
+
+                // Клик по карточке → открыть детали
+                card.addEventListener('click', (e) => {
+                    // Не открываем детали, если кликнули по кнопке избранного
+                    if (e.target.closest('.card-favorite-btn')) return;
+                    openCountryDetail(cca3);
+                });
+
+                // Клик по кнопке избранного
+                const favBtn = card.querySelector('.card-favorite-btn');
+                favBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(cca3);
+                });
+
+                return card;
+            }
+
+            function renderSkeletons() {
+                countriesGrid.innerHTML = '';
+                resultsInfo.textContent = 'Загрузка...';
+                const skeletonCount = 8;
+                for (let i = 0; i < skeletonCount; i++) {
+                    const skeleton = document.createElement('div');
+                    skeleton.className = 'skeleton-card';
+                    skeleton.innerHTML = `
+                        <div class="skeleton-img"></div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-line medium"></div>
+                            <div class="skeleton-line short"></div>
+                            <div class="skeleton-line" style="width:65%"></div>
+                            <div class="skeleton-line short"></div>
+                        </div>
+                    `;
+                    countriesGrid.appendChild(skeleton);
+                }
+            }
+
+            function renderError() {
+                countriesGrid.innerHTML = `
+                    <div class="state-message">
+                        <div class="state-icon">⚠️</div>
+                        <h3>Ошибка загрузки</h3>
+                        <p>${escapeHtml(errorMessage)}</p>
+                        <button class="btn-retry" onclick="window.location.reload()">🔄 Попробовать снова</button>
+                    </div>
+                `;
+                resultsInfo.textContent = '';
+            }
+
+            function renderEmptyState() {
+                let icon = '🔍';
+                let title = 'Ничего не найдено';
+                let description = 'Попробуйте изменить параметры поиска или фильтра.';
+
+                if (showFavoritesOnly && favorites.size === 0) {
+                    icon = '⭐';
+                    title = 'Нет избранных стран';
+                    description = 'Нажмите на сердечко 💛 на карточке страны, чтобы добавить её в избранное.';
+                } else if (showFavoritesOnly) {
+                    icon = '🔍';
+                    title = 'Совпадений в избранном нет';
+                    description = 'Среди избранных стран нет подходящих под текущие фильтры.';
+                }
+
+                countriesGrid.innerHTML = `
+                    <div class="state-message">
+                        <div class="state-icon">${icon}</div>
+                        <h3>${title}</h3>
+                        <p>${description}</p>
+                        ${showFavoritesOnly ? '<button class="btn-retry" id="btnShowAll">📋 Показать все страны</button>' : ''}
+                    </div>
+                `;
+                resultsInfo.textContent = '';
+
+                // Кнопка "Показать все страны" в пустом состоянии
+                const btnShowAll = document.getElementById('btnShowAll');
+                if (btnShowAll) {
+                    btnShowAll.addEventListener('click', () => {
+                        showFavoritesOnly = false;
+                        updateFavoritesUI();
+                        renderCountries();
+                    });
+                }
+            }
+
+            // ==================== МОДАЛЬНОЕ ОКНО ====================
+            async function openCountryDetail(cca3) {
+                // Показываем модалку с лоадером
+                modalContent.innerHTML = `
+                    <button class="modal-close" id="modalCloseBtn" title="Закрыть">✕</button>
+                    <div class="modal-loader">
+                        <div class="spinner"></div>
+                        <p>Загрузка информации о стране...</p>
+                    </div>
+                `;
+                modalOverlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                // Привязываем закрытие
+                const closeBtn = document.getElementById('modalCloseBtn');
+                if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+                try {
+                    const country = await fetchCountryDetail(cca3);
+                    renderDetailModal(country);
+                } catch (err) {
+                    modalContent.innerHTML = `
+                        <button class="modal-close" id="modalCloseBtn" title="Закрыть">✕</button>
+                        <div class="modal-loader">
+                            <div class="state-icon" style="font-size:3rem;">⚠️</div>
+                            <h3>Ошибка</h3>
+                            <p>${escapeHtml(err.message || 'Не удалось загрузить детали')}</p>
+                            <button class="btn-retry" id="btnRetryDetail">Попробовать снова</button>
+                        </div>
+                    `;
+                    const closeBtn = document.getElementById('modalCloseBtn');
+                    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+                    const retryBtn = document.getElementById('btnRetryDetail');
+                    if (retryBtn) retryBtn.addEventListener('click', () => openCountryDetail(cca3));
+                }
+            }
+
+            function renderDetailModal(country) {
+                const commonName = country.name?.common || 'Неизвестная страна';
+                const officialName = country.name?.official || '';
+                const flagUrl = country.flags?.svg || country.flags?.png || '';
+                const flagAlt = country.flags?.alt || `Флаг ${commonName}`;
+                const region = country.region || '—';
+                const subregion = country.subregion || '—';
+                const population = country.population ? formatNumber(country.population) : '—';
+                const capital = country.capital && country.capital.length > 0 ? country.capital.join(', ') : '—';
+                const area = country.area ? formatNumber(country.area) + ' км²' : '—';
+                const timezones = country.timezones ? country.timezones.join(', ') : '—';
+                const cca3 = country.cca3 || '';
+
+                // Валюты
+                let currenciesStr = '—';
+                if (country.currencies && typeof country.currencies === 'object') {
+                    const currArr = Object.entries(country.currencies).map(([code, info]) => {
+                        return `${info.name || code} (${info.symbol || code})`;
+                    });
+                    if (currArr.length > 0) currenciesStr = currArr.join(', ');
+                }
+
+                // Языки
+                let languagesStr = '—';
+                if (country.languages && typeof country.languages === 'object') {
+                    const langArr = Object.values(country.languages);
+                    if (langArr.length > 0) languagesStr = langArr.join(', ');
+                }
+
+                // Границы
+                let bordersStr = '—';
+                let bordersChips = '';
+                if (country.borders && Array.isArray(country.borders) && country.borders.length > 0) {
+                    const borderNames = country.borders.map(code => {
+                        const found = allCountries.find(c => c.cca3 === code);
+                        return found ? found.name?.common || code : code;
+                    });
+                    bordersStr = borderNames.join(', ');
+                    bordersChips = borderNames.map(name => `<span class="chip">${escapeHtml(name)}</span>`)
+                        .join('');
+                }
+
+                const isFav = isFavorite(cca3);
+                const favBtnClass = isFav ? 'is-favorite' : '';
+                const favSymbol = isFav ? '❤️' : '🤍';
+
+                modalContent.innerHTML = `
+                    <button class="modal-close" id="modalCloseBtn" title="Закрыть">✕</button>
+                    ${flagUrl ? `<img class="modal-flag" src="${flagUrl}" alt="${escapeHtml(flagAlt)}" onerror="this.style.display='none';">` : ''}
+                    <div class="modal-body">
+                        <h2>${escapeHtml(commonName)}</h2>
+                        ${officialName && officialName !== commonName ? `<p class="official-name">${escapeHtml(officialName)}</p>` : ''}
+                        <div style="margin-bottom:14px;">
+                            <button class="card-favorite-btn ${favBtnClass}" id="modalFavBtn" data-cca3="${cca3}" style="position:static;display:inline-flex;width:auto;height:auto;padding:8px 16px;border-radius:50px;gap:6px;font-size:0.9rem;background:#f8fafc;box-shadow:none;" title="В избранное">
+                                ${favSymbol} <span>${isFav ? 'В избранном' : 'Добавить в избранное'}</span>
+                            </button>
+                        </div>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">🏙️ Столица</span>
+                                <span class="detail-value">${escapeHtml(capital)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">🌍 Регион</span>
+                                <span class="detail-value">${escapeHtml(region)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">🗺️ Субрегион</span>
+                                <span class="detail-value">${escapeHtml(subregion)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">👥 Население</span>
+                                <span class="detail-value">${escapeHtml(String(population))}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">📐 Площадь</span>
+                                <span class="detail-value">${escapeHtml(area)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">🕐 Часовые пояса</span>
+                                <span class="detail-value">${escapeHtml(timezones)}</span>
+                            </div>
+                            <div class="detail-item full-width">
+                                <span class="detail-label">💱 Валюты</span>
+                                <span class="detail-value">${escapeHtml(currenciesStr)}</span>
+                            </div>
+                            <div class="detail-item full-width">
+                                <span class="detail-label">🗣️ Языки</span>
+                                <span class="detail-value">${escapeHtml(languagesStr)}</span>
+                            </div>
+                            ${bordersChips ? `
+                            <div class="detail-item full-width">
+                                <span class="detail-label">🌐 Граничит с</span>
+                                <div class="detail-chips">${bordersChips}</div>
+                            </div>` : `
+                            <div class="detail-item full-width">
+                                <span class="detail-label">🌐 Граничит с</span>
+                                <span class="detail-value">${escapeHtml(bordersStr)}</span>
+                            </div>`}
+                        </div>
+                    </div>
+                `;
+
+                // Привязываем события
+                const closeBtn = document.getElementById('modalCloseBtn');
+                if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+                const favBtn = document.getElementById('modalFavBtn');
+                if (favBtn) {
+                    favBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleFavorite(cca3);
+                        // Обновляем кнопку в модалке
+                        const updatedIsFav = isFavorite(cca3);
+                        favBtn.classList.toggle('is-favorite', updatedIsFav);
+                        favBtn.querySelector('span').textContent = updatedIsFav ?
+                            'В избранном' : 'Добавить в избранное';
+                        favBtn.innerHTML = updatedIsFav ?
+                            '❤️ <span>В избранном</span>' :
+                            '🤍 <span>Добавить в избранное</span>';
+                    });
+                }
+            }
+
+            function closeModal() {
+                modalOverlay.style.display = 'none';
+                modalContent.innerHTML = '';
+                document.body.style.overflow = '';
+            }
+
+            function onModalOverlayClick(e) {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            }
+
+            function onKeyDown(e) {
+                if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+                    closeModal();
+                }
+            }
+
+            // ==================== ОБРАБОТЧИКИ СОБЫТИЙ ====================
+            function onSearchInput() {
+                const val = searchInput.value.trim();
+                // Показываем/скрываем кнопку очистки
+                if (val.length > 0) {
+                    searchClear.classList.add('visible');
+                } else {
+                    searchClear.classList.remove('visible');
+                }
+                // Дебаунс 300ms
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => {
+                    renderCountries();
+                }, 300);
+            }
+
+            function clearSearch() {
+                searchInput.value = '';
+                searchClear.classList.remove('visible');
+                renderCountries();
+                searchInput.focus();
+            }
+
+            function onFilterChange() {
+                renderCountries();
+            }
+
+            // ==================== УТИЛИТЫ ====================
+            function formatNumber(num) {
+                if (num === null || num === undefined) return '—';
+                return Number(num).toLocaleString('ru-RU');
+            }
+
+            function escapeHtml(str) {
+                if (str === null || str === undefined) return '';
+                const div = document.createElement('div');
+                div.textContent = String(str);
+                return div.innerHTML;
+            }
+
+            // ==================== ЗАПУСК ====================
+            init();
+        })();
+    </script>
+</body>
+</html>
